@@ -31,32 +31,29 @@ if __name__ == '__main__':
     # Data from the City dataset (use any of the XXXpos.csv.gz files in the directory)
     data = 'LONpos.csv.gz'
 
-    citypos = loadtxt(citypath+data, delimiter=',')
-
+    citypos = loadtxt(citypath + data, delimiter=',')
 
     # What is in the dataset
-    plt.figure(figsize=(10,10))
-    plt.scatter(citypos[:, 1], citypos[:, 0],  s=1)
+    plt.figure(figsize=(10, 10))
+    plt.scatter(citypos[:, 1], citypos[:, 0], s=1)
     plt.show()
 
-    fig = plt.figure(figsize=(10,10))
+    fig = plt.figure(figsize=(10, 10))
 
     # Looking for a large number of clusters with K-means
     km = KMeans(n_clusters=800, n_init=1)
     itime = timeit.default_timer()
     labels = km.fit_predict(citypos)
     etime = timeit.default_timer()
-    print (etime-itime)
+    print(etime - itime)
     print(len(np.unique(labels)))
-
 
     ax = fig.add_subplot(111)
     ax.set_title('K-Means')
-    ax.scatter(citypos[:, 1], citypos[:, 0], c=labels/len(np.unique(labels))*1.0, s=2, marker='+')
+    ax.scatter(citypos[:, 1], citypos[:, 0], c=labels / len(np.unique(labels)) * 1.0, s=2, marker='+')
     plt.show()
 
-
-    #Leader
+    # Leader
     from kemlglearn.cluster import Leader
 
     lead = Leader(radius=0.004)
@@ -64,13 +61,13 @@ if __name__ == '__main__':
     lead.fit(citypos)
     labels = lead.predict(citypos)
     etime = timeit.default_timer()
-    print (etime-itime)
+    print(etime - itime)
     print(len(np.unique(labels)))
-    fig = plt.figure(figsize=(10,10))
+    fig = plt.figure(figsize=(10, 10))
 
     ax = fig.add_subplot(111)
     ax.set_title('Leader')
-    ax.scatter(citypos[:, 1], citypos[:, 0], c=np.array(labels)/len(np.unique(labels))*1.0, s=2, marker='+')
+    ax.scatter(citypos[:, 1], citypos[:, 0], c=np.array(labels) / len(np.unique(labels)) * 1.0, s=2, marker='+')
     plt.show()
 
     #
@@ -79,14 +76,14 @@ if __name__ == '__main__':
     itime = timeit.default_timer()
     labels = dbs.fit_predict(citypos)
     etime = timeit.default_timer()
-    print (etime-itime)
+    print(etime - itime)
     print(len(np.unique(labels)))
-    labels[labels == -1] += len(np.unique(labels))+10
-    fig = plt.figure(figsize=(10,10))
+    labels[labels == -1] += len(np.unique(labels)) + 10
+    fig = plt.figure(figsize=(10, 10))
 
     ax = fig.add_subplot(111)
     ax.set_title('DBSCAN')
-    ax.scatter(citypos[:, 1], citypos[:, 0], c=(labels+1)/len(np.unique(labels))*1.0, s=2, marker='+')
+    ax.scatter(citypos[:, 1], citypos[:, 0], c=(labels + 1) / len(np.unique(labels)) * 1.0, s=2, marker='+')
 
     plt.show()
 
@@ -99,13 +96,13 @@ if __name__ == '__main__':
     labels = birch.fit_predict(citypos)
     etime = timeit.default_timer()
 
-    print (etime-itime)
+    print(etime - itime)
     print(len(np.unique(labels)))
-    labels[labels == -1] += len(np.unique(labels))+10
-    fig = plt.figure(figsize=(10,10))
+    labels[labels == -1] += len(np.unique(labels)) + 10
+    fig = plt.figure(figsize=(10, 10))
 
     ax = fig.add_subplot(111)
     ax.set_title('BIRCH')
-    ax.scatter(citypos[:, 1], citypos[:, 0], c=(labels+1)/len(np.unique(labels))*1.0, s=2, marker='+')
+    ax.scatter(citypos[:, 1], citypos[:, 0], c=(labels + 1) / len(np.unique(labels)) * 1.0, s=2, marker='+')
 
     plt.show()
