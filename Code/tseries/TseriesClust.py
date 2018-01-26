@@ -27,6 +27,8 @@ from kemlglearn.cluster import KMedoidsFlexible
 from fastdtw import fastdtw
 
 
+
+
 def sel(n, i, j):
     return n * i - (i * (i+1)//2) + (j - i) - 1
 
