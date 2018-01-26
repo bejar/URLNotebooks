@@ -16,7 +16,10 @@ TseriesClust
 :Created on: 22/12/2017 10:27 
 
 """
+
+from __future__ import print_function, division
 from scipy.spatial import distance
+from scipy.signal import resample
 from sklearn.metrics import pairwise
 import matplotlib.pyplot as plt
 import numpy as np
@@ -32,9 +35,12 @@ __author__ = 'bejar'
 if __name__ == '__main__':
     datapath = '../../Data/'
 
-    X = np.loadtxt(datapath+'peaks.csv', delimiter=' ')
+    X = np.loadtxt(datapath+'peaks2.csv', delimiter=' ')
     print(X.shape)
-    fig = plt.figure(figsize=(12,6))
+    # X = resample(X, X.shape[1]//2, axis=1, window=X.shape[1])
+    # print(X.shape)
+
+    # fig = plt.figure(figsize=(12,6))
     # plt.plot(data[5])
     # plt.plot(data[12])
     # plt.show()
@@ -50,27 +56,35 @@ if __name__ == '__main__':
     for i in range(X.shape[0]):
         for j in range(i+1, X.shape[0]):
             mdist[sel(X.shape[0], i, j)] = fastdtw(X[i], X[j], dist=distance.euclidean)[0]
-    nc = 6
+    nc = 3
 
     km = KMedoidsFlexible(n_clusters=nc, distance='precomputed')
-    labels = km.fit_predict(mdist)
+    labels1 = km.fit_predict(mdist)
 
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111)
+    # for i in km.cluster_medoids_:
+    #     plt.plot(X[i])
+    # plt.show()
+
+    mdist = np.zeros(X.shape[0] * (X.shape[0] - 1) // 2)
+    for i in range(X.shape[0]):
+        for j in range(i+1, X.shape[0]):
+            mdist[sel(X.shape[0], i, j)] = distance.euclidean(X[i], X[j])
+
+    km = KMedoidsFlexible(n_clusters=nc, distance='precomputed')
+    labels2 = km.fit_predict(mdist)
 
     fig = plt.figure()
 
-    ax = fig.add_subplot(111)
-    for i in km.cluster_medoids_:
-        plt.plot(X[i])
-
-
-    plt.show()
-
-
-
-    ax = fig.add_subplot(111)
     for i in range(nc):
-        fig = plt.figure()
-        for p, j in enumerate(labels):
+        ax = fig.add_subplot(2, nc, i + 1)
+        for p, j in enumerate(labels1):
             if j == i:
-              plt.plot(X[p])
-        plt.show()
+                ax.plot(X[p])
+
+        ax = fig.add_subplot(2,nc,nc+i+1)
+        for p, j in enumerate(labels2):
+            if j == i:
+              ax.plot(X[p])
+    plt.show()
