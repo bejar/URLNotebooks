@@ -30,7 +30,7 @@ from sklearn.decomposition import PCA
 from mpl_toolkits.mplot3d import Axes3D
 import argparse
 
-path = '/home/bejar/Data/authors/'
+path = '../../Data/authors/'
 
 
 def show_figure(fdata, labels1, labels2, title='', subtitle=['', '']):
@@ -39,13 +39,12 @@ def show_figure(fdata, labels1, labels2, title='', subtitle=['', '']):
     ax = fig.add_subplot(121, projection='3d')
     ax.set_title(subtitle[0])
     plt.scatter(fdata[:, 0], fdata[:, 1], zs=fdata[:, 2], depthshade=False, c=labels1, s=100)
-    # cbar = plt.colorbar(ticks=range(len(ticks)))
-    # cbar.ax.set_yticklabels(ticks)
     ax = fig.add_subplot(122, projection='3d')
     ax.set_title(subtitle[1])
     plt.scatter(fdata[:, 0], fdata[:, 1], zs=fdata[:, 2], depthshade=False, c=labels2, s=100)
 
     plt.show()
+    plt.close()
 
 
 def authors_data(method=1, nfeatures=100):

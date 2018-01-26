@@ -1,12 +1,12 @@
 """
-.. module:: PartitionalAuthors
+.. module:: ValidationAuthors
 
 PartitionalAuthors
 *************
 
-:Description: PartitionalAuthors
+:Description: ValidationAuthors
 
-    
+    Validation clustering measures for the authors dataset
 
 :Authors: bejar
     
@@ -17,37 +17,25 @@ PartitionalAuthors
 
 """
 
-__author__ = 'bejar'
 
+from __future__ import print_function
 from os import listdir
 from os.path import join
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 from pylab import *
-import seaborn as sns
-import numpy as np
 from sklearn.metrics import adjusted_mutual_info_score, silhouette_score
 from sklearn.cluster import KMeans, SpectralClustering, AffinityPropagation
 from sklearn.mixture import GaussianMixture
 from sklearn.decomposition import PCA
 from mpl_toolkits.mplot3d import Axes3D
-from amltlearn.metrics.cluster import calinski_harabasz_score, davies_bouldin_score
+from kemlglearn.metrics.cluster import calinski_harabasz_score, davies_bouldin_score
 import matplotlib.pyplot as plt
+import argparse
 
-docpath = '/home/bejar/Data/authors/Auth1/'
+__author__ = 'bejar'
 
-
-def show_figure(fdata, labels1, labels2, title=''):
-    fig = plt.figure(figsize=(12,10))
-    fig.suptitle(title, fontsize=32)
-    ax = fig.add_subplot(121, projection='3d')
-    plt.scatter(fdata[:, 0], fdata[:, 1], zs=fdata[:, 2], depthshade=False, c=labels1,s=100)
-    # cbar = plt.colorbar(ticks=range(len(ticks)))
-    # cbar.ax.set_yticklabels(ticks)
-    ax = fig.add_subplot(122, projection='3d')
-    plt.scatter(fdata[:, 0], fdata[:, 1], zs=fdata[:, 2], depthshade=False, c=labels2,s=100)
-
-    plt.show()
+path = '../../Data/authors/'
 
 def authors_data(method=1, nfeatures=100):
     """
@@ -78,97 +66,111 @@ def authors_data(method=1, nfeatures=100):
     elif method == 3: # Features are word occurence
         cvec = TfidfVectorizer(input='filename', stop_words='english', max_features=nfeatures, binary=True, use_idf=False, norm=False)
 
-    return cvec.fit_transform(pdocs).toarray(), labels
-
-nfeatures = 1500
-method = 2
-nclusters = 10
-
-authors, alabels = authors_data(method, nfeatures)
-
-pca = PCA()
-fdata = pca.fit_transform(authors)
+    return cvec.fit_transform(pdocs).toarray(), np.array(labels).reshape(1, -1)
 
 
-# KMeans
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data', default=1, choices=[1, 2], help='Dataset to use (1 or 2)', type=int)
+    parser.add_argument('--nfeatures', help="Number of features to generate", default=100, type=int)
+    parser.add_argument('--fmethod', help="Method for generating features", default=1, choices=[1, 2, 3], type=int)
+    parser.add_argument('--nclusters', help="Number of clusters", default=10, type=int)
+    args = parser.parse_args()
 
-lscores = []
-for nc in range(2,nclusters+1):
-    km = KMeans(n_clusters=nc, n_init=10, random_state=0)
-    labels = km.fit_predict(authors)
-    lscores.append((
-        silhouette_score(authors, labels),
-        calinski_harabasz_score(authors, labels),
-        davies_bouldin_score(authors, labels)))
+    if args.data == 1:
+        docpath = path + 'Auth1/'
+    else:
+        docpath = path + 'Auth2/'
 
-fig = plt.figure()
-ax = fig.add_subplot(131)
-plt.plot(range(2,nclusters+1), [x for x,_,_ in lscores])
-ax = fig.add_subplot(132)
-plt.plot(range(2,nclusters+1), [x for _, x,_ in lscores])
-ax = fig.add_subplot(133)
-plt.plot(range(2,nclusters+1), [x for _, _, x in lscores])
+    nfeatures = args.nfeatures
+    method = args.fmethod
 
-plt.show()
+    nclusters = args.nclusters
 
+    authors, alabels = authors_data(method, nfeatures)
 
+    pca = PCA()
+    fdata = pca.fit_transform(authors)
 
-# print(adjusted_mutual_info_score(alabels, labels))
-#
-# show_figure(fdata, alabels, labels, '')
+    # KMeans
 
-# GMM
-# covariance_type = 'spherical', 'tied', 'diag', 'full'
+    lscores = []
+    for nc in range(2,nclusters+1):
+        km = KMeans(n_clusters=nc, n_init=10, random_state=0)
+        labels = km.fit_predict(authors)
+        lscores.append((
+            silhouette_score(authors, labels),
+            calinski_harabasz_score(authors, labels),
+            davies_bouldin_score(authors, labels)))
 
-lscores = []
-for nc in range(2,nclusters+1):
-    gmm = GaussianMixture(n_components=nc, covariance_type='full', random_state=0)
-    gmm.fit(authors)
-    labels = gmm.predict(authors)
-    lscores.append((
-        silhouette_score(authors, labels),
-        calinski_harabasz_score(authors, labels),
-        davies_bouldin_score(authors, labels)))
+    fig = plt.figure()
+    fig.suptitle('K-means', fontsize=20)
+    ax = fig.add_subplot(131)
+    plt.title('Sil')
+    plt.plot(range(2,nclusters+1), [x for x,_,_ in lscores])
+    ax = fig.add_subplot(132)
+    plt.title('CH')
+    plt.plot(range(2,nclusters+1), [x for _, x,_ in lscores])
+    ax = fig.add_subplot(133)
+    plt.title('DB')
+    plt.plot(range(2,nclusters+1), [x for _, _, x in lscores])
 
-fig = plt.figure()
-ax = fig.add_subplot(131)
-plt.plot(range(2,nclusters+1), [x for x,_,_ in lscores])
-ax = fig.add_subplot(132)
-plt.plot(range(2,nclusters+1), [x for _, x,_ in lscores])
-ax = fig.add_subplot(133)
-plt.plot(range(2,nclusters+1), [x for _, _, x in lscores])
-
-plt.show()
+    plt.show()
 
 
-# print(adjusted_mutual_info_score(alabels, labels))
-#
-# show_figure(fdata, alabels, labels, '')
-#
+    # GMM
+    # covariance_type = 'spherical', 'tied', 'diag', 'full'
 
+    lscores = []
+    for nc in range(2,nclusters+1):
+        gmm = GaussianMixture(n_components=nc, covariance_type='full', random_state=0)
+        gmm.fit(authors)
+        labels = gmm.predict(authors)
+        lscores.append((
+            silhouette_score(authors, labels),
+            calinski_harabasz_score(authors, labels),
+            davies_bouldin_score(authors, labels)))
 
-# # Spectral Clustering
-lscores = []
-for nc in range(2,nclusters+1):
-    spec = SpectralClustering(n_clusters=nc, affinity='nearest_neighbors', n_neighbors=15, random_state=0)
-    labels = spec.fit_predict(authors)
-    lscores.append((
-        silhouette_score(authors, labels),
-        calinski_harabasz_score(authors, labels),
-        davies_bouldin_score(authors, labels)))
+    fig = plt.figure()
+    fig.suptitle('GMM', fontsize=20)
+    ax = fig.add_subplot(131)
+    plt.title('Sil')
+    plt.plot(range(2,nclusters+1), [x for x,_,_ in lscores])
+    ax = fig.add_subplot(132)
+    plt.title('CH')
+    plt.plot(range(2,nclusters+1), [x for _, x,_ in lscores])
+    ax = fig.add_subplot(133)
+    plt.title('DB')
+    plt.plot(range(2,nclusters+1), [x for _, _, x in lscores])
 
-fig = plt.figure()
-ax = fig.add_subplot(131)
-plt.plot(range(2,nclusters+1), [x for x,_,_ in lscores])
-ax = fig.add_subplot(132)
-plt.plot(range(2,nclusters+1), [x for _, x,_ in lscores])
-ax = fig.add_subplot(133)
-plt.plot(range(2,nclusters+1), [x for _, _, x in lscores])
+    plt.show()
 
-plt.show()
+    # Spectral Clustering
+    lscores = []
+    for nc in range(2,nclusters+1):
+        spec = SpectralClustering(n_clusters=nc, affinity='nearest_neighbors', n_neighbors=15, random_state=0)
+        labels = spec.fit_predict(authors)
+        lscores.append((
+            silhouette_score(authors, labels),
+            calinski_harabasz_score(authors, labels),
+            davies_bouldin_score(authors, labels)))
 
-# print(adjusted_mutual_info_score(alabels, labels))
-#
-# show_figure(fdata, alabels, labels, '')
+    fig = plt.figure()
+    fig.suptitle('Spectral', fontsize=20)
+    ax = fig.add_subplot(131)
+    plt.title('Sil')
+    plt.plot(range(2,nclusters+1), [x for x,_,_ in lscores])
+    ax = fig.add_subplot(132)
+    plt.title('CH')
+    plt.plot(range(2,nclusters+1), [x for _, x,_ in lscores])
+    ax = fig.add_subplot(133)
+    plt.title('DB')
+    plt.plot(range(2,nclusters+1), [x for _, _, x in lscores])
+
+    plt.show()
+
+    # print(adjusted_mutual_info_score(alabels, labels))
+    #
+    # show_figure(fdata, alabels, labels, '')
 
 
