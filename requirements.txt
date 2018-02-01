@@ -6,4 +6,5 @@ networkx
 folium
 community
 scipy
+numpy
 
