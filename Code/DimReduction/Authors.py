@@ -163,7 +163,7 @@ if __name__ == '__main__':
     print('Non Negative Matric Factorization')
     from sklearn.decomposition import NMF
 
-    nmf = NMF(n_components=3, sparseness='components', solver='cd')
+    nmf = NMF(n_components=3, solver='cd')
     fdata = nmf.fit_transform(authors)
     print(nmf.reconstruction_err_)
 
