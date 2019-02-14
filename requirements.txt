@@ -12,4 +12,5 @@ jupyter
 ipywidgets
 python-louvain
 pyclustering
+pyod
 
