@@ -16,9 +16,8 @@ Digits
 
 """
 
-from __future__ import print_function
+
 from sklearn.datasets import load_digits
-from pylab import *
 from sklearn.decomposition import PCA
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt

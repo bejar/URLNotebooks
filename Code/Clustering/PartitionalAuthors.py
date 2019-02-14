@@ -22,7 +22,7 @@ __author__ = 'bejar'
 from os import listdir
 from os.path import join
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from pylab import *
+import matplotlib.pyplot as plt
 from sklearn.metrics import adjusted_mutual_info_score
 from sklearn.cluster import KMeans, SpectralClustering
 from sklearn.mixture import GaussianMixture

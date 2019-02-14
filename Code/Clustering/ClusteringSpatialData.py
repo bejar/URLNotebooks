@@ -16,11 +16,11 @@ DensityBased
 :Created on: 23/09/2015 10:03 
 
 """
-from __future__ import print_function
 from sklearn.cluster import DBSCAN, KMeans
-from pylab import *
+import matplotlib.pyplot as plt
 import numpy as np
 import timeit
+from numpy import loadtxt
 
 __author__ = 'bejar'
 

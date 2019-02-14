@@ -17,7 +17,6 @@ TseriesClust
 
 """
 
-from __future__ import print_function, division
 from scipy.spatial import distance
 from scipy.signal import resample
 from sklearn.metrics import pairwise

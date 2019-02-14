@@ -18,12 +18,10 @@ PartitionalAuthors
 """
 
 
-from __future__ import print_function
 from os import listdir
 from os.path import join
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
-from pylab import *
 from sklearn.metrics import adjusted_mutual_info_score, silhouette_score
 from sklearn.cluster import KMeans, SpectralClustering, AffinityPropagation
 from sklearn.mixture import GaussianMixture
@@ -32,6 +30,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from kemlglearn.metrics.cluster import calinski_harabasz_score, davies_bouldin_score
 import matplotlib.pyplot as plt
 import argparse
+import numpy as np
 
 __author__ = 'bejar'
 

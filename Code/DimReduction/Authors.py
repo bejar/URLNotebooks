@@ -17,11 +17,10 @@ Authors
 
 """
 
-from __future__ import print_function
+
 from os import listdir
 from os.path import join
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from pylab import *
 from sklearn.decomposition import PCA
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
@@ -72,7 +71,6 @@ if __name__ == '__main__':
     labels = [dlabs[v] for v in labs]
 
     pdocs = [join(docpath, f) for f in docs]
-
 
     if method == 1:  # Features are word counts
         cvec = CountVectorizer(input='filename', stop_words='english', max_features=nfeatures)

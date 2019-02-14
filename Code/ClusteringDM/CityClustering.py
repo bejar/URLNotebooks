@@ -16,7 +16,7 @@ CityClustering
 :Created on: 30/09/2015 14:07 
 
 """
-from __future__ import print_function
+
 
 from sklearn.cluster import Birch, MiniBatchKMeans, KMeans
 import numpy as np
