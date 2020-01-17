@@ -13,5 +13,4 @@ ipywidgets
 python-louvain
 pyclustering
 pyod
-python-louvain
-
+timeit
